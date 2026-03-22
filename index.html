@@ -12,9 +12,8 @@
     <div class="header-inner">
       <h1>Nikke Collection Tracker</h1>
       <div class="stats-bar" id="stats-bar">
-        <span>Owned: <span class="stat-value" id="stat-owned">0</span> / <span id="stat-total">202</span></span>
+        <span>Owned: <span class="stat-value" id="stat-owned">0</span> / <span id="stat-total">185</span></span>
         <span>Completion: <span class="stat-value" id="stat-pct">0%</span></span>
-        <span>Treasures: <span class="stat-value" id="stat-treasures">0</span></span>
       </div>
     </div>
   </header>
@@ -36,18 +35,11 @@
         <option value="Electric">Electric</option>
         <option value="Water">Water</option>
       </select>
-      <select class="filter-select" id="filter-class">
-        <option value="">All Classes</option>
-        <option value="Attacker">Attacker</option>
-        <option value="Defender">Defender</option>
-        <option value="Supporter">Supporter</option>
-      </select>
       <select class="filter-select" id="filter-burst">
         <option value="">All Burst Types</option>
         <option value="1">Burst I</option>
         <option value="2">Burst II</option>
         <option value="3">Burst III</option>
-        <option value="All">All</option>
       </select>
       <select class="filter-select" id="filter-manufacturer">
         <option value="">All Manufacturers</option>
@@ -56,6 +48,17 @@
         <option value="Tetra">Tetra</option>
         <option value="Pilgrim">Pilgrim</option>
         <option value="Abnormal">Abnormal</option>
+      </select>
+      <select class="filter-select" id="filter-tier">
+        <option value="">All Boss Tiers</option>
+        <option value="SS">SS</option>
+        <option value="S">S</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="F">F</option>
       </select>
       <select class="filter-select" id="filter-owned">
         <option value="">All</option>
@@ -69,132 +72,33 @@
         <option value="manufacturer">Sort: Manufacturer</option>
         <option value="owned">Sort: Owned</option>
       </select>
+      <button class="btn" id="btn-select">Select</button>
+      <button class="btn" id="btn-report">Report</button>
       <button class="btn" id="btn-export">Export</button>
       <button class="btn" id="btn-import">Import</button>
       <input type="file" id="import-file" accept=".json">
     </div>
   </nav>
 
+  <div class="bulk-bar hidden" id="bulk-bar">
+    <span class="bulk-count" id="bulk-count">0 selected</span>
+    <button class="btn" id="bulk-select-all">Select All</button>
+    <button class="btn btn-accent" id="bulk-owned">Set Owned</button>
+    <button class="btn" id="bulk-unowned">Set Not Owned</button>
+    <button class="btn" id="bulk-clear">Clear Selection</button>
+  </div>
+
   <main class="main">
     <div class="card-grid" id="card-grid"></div>
   </main>
 
-  <div class="modal-overlay hidden" id="modal-overlay">
-    <div class="modal" id="modal">
-      <button class="modal-close" id="modal-close">&times;</button>
-
-      <div class="modal-header">
-        <div class="modal-avatar" id="modal-avatar"></div>
-        <div class="modal-title-area">
-          <h2 id="modal-name"></h2>
-          <div class="modal-meta" id="modal-meta"></div>
-        </div>
-      </div>
-
+  <div class="modal-overlay hidden" id="report-overlay">
+    <div class="modal" style="max-width:700px">
+      <button class="modal-close" id="report-close">&times;</button>
+      <div class="modal-header"><h2>Equipment Report</h2></div>
       <div class="modal-body">
-        <div class="toggle-row">
-          <label class="toggle">
-            <input type="checkbox" id="modal-owned">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="toggle-label">Owned</span>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Core Level</label>
-          <div class="form-row">
-            <input type="range" class="form-input" id="modal-core" min="0" max="9" value="0">
-            <span class="range-value" id="modal-core-val">0</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Skills</label>
-          <div class="form-row-narrow">
-            <div class="form-col">
-              <label>Skill 1</label>
-              <div class="form-row">
-                <input type="range" class="form-input" id="modal-s1" min="1" max="10" value="1">
-                <span class="range-value" id="modal-s1-val">1</span>
-              </div>
-            </div>
-            <div class="form-col">
-              <label>Skill 2</label>
-              <div class="form-row">
-                <input type="range" class="form-input" id="modal-s2" min="1" max="10" value="1">
-                <span class="range-value" id="modal-s2-val">1</span>
-              </div>
-            </div>
-            <div class="form-col">
-              <label>Burst</label>
-              <div class="form-row">
-                <input type="range" class="form-input" id="modal-burst" min="1" max="10" value="1">
-                <span class="range-value" id="modal-burst-val">1</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group" id="collection-item-group">
-          <div class="toggle-row">
-            <label class="toggle">
-              <input type="checkbox" id="modal-collection-item">
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label">Collection Item (Treasure)</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Tier Ratings</label>
-          <div class="form-row-narrow">
-            <div class="form-col">
-              <label>Story</label>
-              <select class="tier-select" id="modal-tier-story">
-                <option value="">None</option>
-                <option value="SS">SS</option>
-                <option value="S">S</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-              </select>
-            </div>
-            <div class="form-col">
-              <label>Bossing</label>
-              <select class="tier-select" id="modal-tier-bossing">
-                <option value="">None</option>
-                <option value="SS">SS</option>
-                <option value="S">S</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-              </select>
-            </div>
-            <div class="form-col">
-              <label>PvP</label>
-              <select class="tier-select" id="modal-tier-pvp">
-                <option value="">None</option>
-                <option value="SS">SS</option>
-                <option value="S">S</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="section-title">Equipment</label>
-          <div class="equip-section" id="equip-section"></div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-accent" id="modal-save">Save</button>
+        <p class="report-summary" id="report-summary"></p>
+        <div class="report-list" id="report-list"></div>
       </div>
     </div>
   </div>
