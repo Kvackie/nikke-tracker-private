@@ -111,23 +111,25 @@ function render() {
 function createCardHTML(c, col) {
   const d = col[c.unitId] || defaultCharData();
   const owned = d.owned;
-  const ec = ELEMENT_COLORS[c.element] || '#666';
-  const rc = RARITY_COLORS[c.rarity] || '#666';
-  const bc = BURST_COLORS[c.burstType] || '#666';
-  const initial = c.name.charAt(0).toUpperCase();
-  const starCount = c.rarity === 'SSR' ? '★★★' : c.rarity === 'SR' ? '★★' : '★';
+  const burstIcon = BURST_ICONS[c.burstType] || BURST_ICONS['3'];
+  const eleIcon = ELEMENT_ICONS[c.element] || '';
 
-  return `<div class="card ${owned ? '' : 'unowned'}" data-unitid="${c.unitId}">
+  const imgHTML = c.icon
+    ? `<img src="${c.icon}" alt="${escapeHTML(c.name)}" loading="lazy">`
+    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text-muted);font-size:2rem">${c.name.charAt(0)}</div>`;
+
+  return `<div class="card ${owned ? '' : 'unowned'} card-rarity-${c.rarity.toLowerCase()}" data-unitid="${c.unitId}">
     ${owned ? '<div class="card-owned-indicator"></div>' : ''}
     ${c.hasTreasure ? '<span class="card-treasure">[T]</span>' : ''}
-    <div class="card-avatar" style="border-color: ${rc}; background: linear-gradient(135deg, ${rc}22, ${rc}08)">
-      ${initial}
+    <div class="card-image">
+      ${imgHTML}
+      <div class="card-image-overlay">
+        <img class="badge-icon" src="${burstIcon}" alt="B${c.burstType}">
+        ${eleIcon ? `<img class="badge-icon" src="${eleIcon}" alt="${c.element}">` : ''}
+      </div>
     </div>
-    <div class="card-name">${escapeHTML(c.name)}</div>
-    <div class="card-badges">
-      <span class="badge badge-rarity" style="--badge-color: ${rc}">${starCount}</span>
-      <span class="badge badge-element" style="--badge-color: ${ec}">${c.element}</span>
-      <span class="badge badge-burst" style="--badge-color: ${bc}">${c.burstType === 'All' ? 'ALL' : c.burstType}</span>
+    <div class="card-body">
+      <div class="card-name">${escapeHTML(c.name)}</div>
     </div>
   </div>`;
 }
@@ -210,21 +212,28 @@ function openModal(unitId) {
   const bc = BURST_COLORS[c.burstType] || '#666';
   const initial = c.name.charAt(0).toUpperCase();
 
-  document.getElementById('modal-avatar').textContent = initial;
-  document.getElementById('modal-avatar').style.borderColor = rc;
-  document.getElementById('modal-avatar').style.background =
-    `linear-gradient(135deg, ${rc}22, ${rc}08)`;
+  const modalAvatar = document.getElementById('modal-avatar');
+  if (c.icon) {
+    modalAvatar.className = 'modal-avatar';
+    modalAvatar.innerHTML = `<img src="${c.icon}" alt="${escapeHTML(c.name)}">`;
+  } else {
+    modalAvatar.className = 'modal-avatar fallback';
+    modalAvatar.textContent = initial;
+  }
   document.getElementById('modal-name').textContent = c.name;
 
-  const starCount = c.rarity === 'SSR' ? '★★★' : c.rarity === 'SR' ? '★★' : '★';
+  const burstIcon = BURST_ICONS[c.burstType] || BURST_ICONS['3'];
+  const eleIcon = ELEMENT_ICONS[c.element] || '';
+  const mfgIcon = MANUFACTURER_ICONS[c.manufacturer] || '';
+
   document.getElementById('modal-meta').innerHTML = `
-    <span class="badge badge-rarity" style="--badge-color: ${rc}">${starCount}</span>
-    <span class="badge badge-element" style="--badge-color: ${ec}">${c.element}</span>
-    <span class="badge badge-burst" style="--badge-color: ${bc}">${c.burstType === 'All' ? 'ALL' : c.burstType}</span>
-    <span class="badge" style="--badge-color: ${mc}; background: none; color: ${mc}">${c.manufacturer}</span>
+    <span class="badge badge-rarity" style="--badge-color: ${rc}">${c.rarity}</span>
+    <img class="badge-icon" src="${burstIcon}" alt="Burst ${c.burstType}" style="width:28px;height:28px">
+    ${eleIcon ? `<img class="badge-icon" src="${eleIcon}" alt="${c.element}" style="width:28px;height:28px">` : ''}
+    ${mfgIcon ? `<img class="badge-icon" src="${mfgIcon}" alt="${c.manufacturer}" style="width:28px;height:28px">` : ''}
     <span class="badge" style="background: none; color: var(--text-muted)">${c.weapon}</span>
     <span class="badge" style="background: none; color: var(--text-muted)">${c.class}</span>
-    ${c.hasTreasure ? '<span class="badge" style="--badge-color: #f1c40f; background: none; color: #f1c40f">[Treasure]</span>' : ''}
+    ${c.hasTreasure ? '<span class="badge" style="color: #f1c40f; background: none">[Treasure]</span>' : ''}
   `;
 
   document.getElementById('modal-owned').checked = d.owned;

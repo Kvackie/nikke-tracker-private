@@ -184,32 +184,36 @@ body {
   padding: 20px;
 }
 
+/* Character Card */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 12px;
 }
 
-/* Character Card */
 .card {
   background: var(--bg-surface);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px;
+  overflow: hidden;
   cursor: pointer;
   transition: all var(--transition);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
   position: relative;
 }
+
+.card.card-rarity-r { border-color: #8b949e; }
+.card.card-rarity-sr { border-color: #2980b9; }
+.card.card-rarity-ssr { border-color: #f1c40f; }
 
 .card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(233, 69, 96, 0.15);
 }
+
+.card.card-rarity-r:hover { border-color: #b0bec5; }
+.card.card-rarity-sr:hover { border-color: #5dade2; }
+.card.card-rarity-ssr:hover { border-color: #f7dc6f; }
 
 .card.unowned {
   filter: grayscale(100%) opacity(0.4);
@@ -219,24 +223,61 @@ body {
   filter: grayscale(50%) opacity(0.7);
 }
 
-.card-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #fff;
-  border: 3px solid;
-  flex-shrink: 0;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+.card-image {
+  width: 100%;
+  aspect-ratio: 262 / 358;
+  overflow: hidden;
   background: var(--bg);
+  position: relative;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  justify-content: center;
+}
+
+.card-image-overlay .badge-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+.card-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card.card-rarity-r .card-body {
+  background: rgba(149, 165, 166, 0.35);
+}
+
+.card.card-rarity-sr .card-body {
+  background: rgba(52, 152, 219, 0.35);
+}
+
+.card.card-rarity-ssr .card-body {
+  background: rgba(241, 196, 15, 0.35);
 }
 
 .card-name {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 600;
   text-align: center;
   line-height: 1.3;
@@ -245,13 +286,14 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  padding: 2px 0;
 }
 
 .card-badges {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
   justify-content: center;
+  align-items: center;
 }
 
 .badge {
@@ -267,26 +309,31 @@ body {
   text-transform: uppercase;
 }
 
-.badge-element {
-  background: var(--badge-color, #666);
-}
-
-.badge-burst {
-  background: var(--badge-color, #666);
-  min-width: 22px;
-}
-
 .badge-rarity {
   background: none;
   color: var(--badge-color, #666);
-  font-size: 0.75rem;
-  letter-spacing: -1px;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
-.badge-manufacturer {
-  background: none;
-  color: var(--text-muted);
-  font-size: 0.65rem;
+.badge-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(233, 69, 96, 0.15);
+}
+
+.card.unowned {
+  filter: grayscale(100%) opacity(0.4);
+}
+
+.card.unowned:hover {
+  filter: grayscale(50%) opacity(0.7);
 }
 
 .card-treasure {
@@ -371,19 +418,30 @@ body {
 }
 
 .modal-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  width: 80px;
+  height: 110px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.modal-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-avatar.fallback {
   font-size: 1.8rem;
   font-weight: 700;
   color: #fff;
-  border: 3px solid;
-  flex-shrink: 0;
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  background: var(--bg);
 }
 
 .modal-title-area {
@@ -770,14 +828,13 @@ body {
     gap: 8px;
   }
 
-  .card {
-    padding: 10px;
+  .card-body {
+    padding: 6px 8px;
   }
 
-  .card-avatar {
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
+  .badge-icon {
+    width: 20px;
+    height: 20px;
   }
 
   .modal {
